@@ -1,7 +1,7 @@
 // client/src/api/notes.js
 //
 // Thin API helper for note generation.
-// Flow: TopicForm -> generateNoteApi() -> Vite proxy (/api) -> Express route
+// Flow: TopicForm -> generateNoteApi() -> Express route (VITE_API_URL origin)
 //       -> generateNotes controller -> Groq / MongoDB -> JSON response.
 //
 // Expected success response body:
@@ -10,8 +10,10 @@
 //     "noteId": "68xxxxxxxx"
 //   }
 
+import { API_URL } from "../config";
+
 /**
- * POST /api/notes/generate-notes with a JSON payload and optional auth token.
+ * POST /api/notes/generate-notes with a JSON payload.
  *
  * @param {object} payload - { topic, classLevel, examType, revisionMode, includeDiagram, includeChart }
  * @param {string|null} token - JWT (from localStorage) sent as `Authorization: Bearer <token>`
@@ -20,9 +22,7 @@
  */
 export async function generateNoteApi(payload, token) {
   try {
-    // Relative URL -> automatically proxied by Vite to http://localhost:8000.
-    // Same-origin request, so any auth cookie set by the backend also flows through.
-    const res = await fetch("/api/notes/generate-notes", {
+    const res = await fetch(`${API_URL}/api/notes/generate-notes`, {
       method: "POST",
 
       headers: {
@@ -34,6 +34,7 @@ export async function generateNoteApi(payload, token) {
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
 
+      credentials: "include",
       body: JSON.stringify(payload),
     });
 
@@ -74,11 +75,12 @@ export async function generateNoteApi(payload, token) {
  */
 export async function getHistoryApi(token) {
   try {
-    const res = await fetch("/api/notes/history", {
+    const res = await fetch(`${API_URL}/api/notes/history`, {
       method: "GET",
       headers: {
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
+      credentials: "include",
     });
 
     const responseData = await res.json().catch(() => null);
@@ -109,11 +111,12 @@ export async function getHistoryApi(token) {
  */
 export async function deleteHistoryApi(id, token) {
   try {
-    const res = await fetch(`/api/notes/history/${id}`, {
+    const res = await fetch(`${API_URL}/api/notes/history/${id}`, {
       method: "DELETE",
       headers: {
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
+      credentials: "include",
     });
 
     const responseData = await res.json().catch(() => null);
@@ -145,12 +148,13 @@ export async function deleteHistoryApi(id, token) {
  */
 export async function updateHistoryApi(id, payload, token) {
   try {
-    const res = await fetch(`/api/notes/history/${id}`, {
+    const res = await fetch(`${API_URL}/api/notes/history/${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
+      credentials: "include",
       body: JSON.stringify(payload),
     });
 

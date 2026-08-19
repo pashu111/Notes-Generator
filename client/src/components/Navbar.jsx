@@ -3,8 +3,8 @@ import { AnimatePresence, motion } from "motion/react";
 import logo from "../assets/logo.png"
 import { useSelector,useDispatch } from 'react-redux';
 import axios from 'axios'
-import {serverUrl} from '../App'
-import{setUserData} from '../redux/userSlice'
+import {API_URL} from '../config'
+import {clearUserData} from '../redux/userSlice'
 import { useNavigate } from "react-router-dom";
 
 function Navbar() {
@@ -17,8 +17,8 @@ function Navbar() {
     
     const handleSignOut = async () => {
         try{
-            await axios.get(serverUrl+"/api/auth/logout", {withCredential:true})
-            dispatch(setUserData(null))
+            await axios.get(API_URL+"/api/auth/logout", {withCredentials:true})
+            dispatch(clearUserData())
             navigate("/auth")
 
         }catch(error){

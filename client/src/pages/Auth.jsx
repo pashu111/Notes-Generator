@@ -7,6 +7,7 @@ import { auth, provider } from "../utils/firebase.js";
 import { useDispatch } from "react-redux";
 import { getCurrentUser } from "../services/api.js";
 import { useToast } from "../components/ui/toastContext.js";
+import { API_URL } from "../config.js";
 
 const Auth = () => {
   const dispatch = useDispatch();
@@ -18,7 +19,7 @@ const Auth = () => {
     setGoogleLoading(true);
     try {
       const response = await signInWithPopup(auth, provider);
-      await fetch("/api/auth/google", {
+      const res = await fetch(`${API_URL}/api/auth/google`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -27,6 +28,7 @@ const Auth = () => {
           email: response.user.email,
         }),
       });
+      if (!res.ok) throw new Error("Google sign-in failed on the server");
       await getCurrentUser(dispatch);
       toast.success("Welcome back!");
     } catch (err) {

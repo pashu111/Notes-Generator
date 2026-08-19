@@ -7,7 +7,6 @@ import Pricing from "./pages/Pricing.jsx"
 import { useEffect } from 'react'
 import { getCurrentUser } from './services/api.js'
 import {useDispatch, useSelector} from 'react-redux'
-export const serverUrl = "https://notes-generator-wsa2.onrender.com"
 
 function App () {
   const dispatch = useDispatch()
@@ -15,43 +14,56 @@ function App () {
     getCurrentUser(dispatch)
   },[dispatch])
 
-  const {userData} = useSelector((state)=>state.user)
+  const {userData, isLoading} = useSelector((state)=>state.user)
 
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-white">
+        <div className="flex flex-col items-center gap-3">
+          <span className="h-10 w-10 animate-spin rounded-full border-2 border-gray-300 border-t-indigo-600" />
+          <p className="text-sm text-gray-500">Loading...</p>
+        </div>
+      </div>
+    )
+  }
+
+  const guard = (el) => (userData ? el : <Navigate to="/auth" replace />)
 
   return (
-    <>
    <Routes>
+  {/* Redirect root to Home */}
+  <Route path="/" element={<Navigate to="/home" replace />} />
+
   {/* Home */}
-  <Route
-    path="/"
-    element={userData ? <Home /> : <Navigate to="/auth" replace />}
-  />
+  <Route path="/home" element={guard(<Home />)} />
 
   {/* Authentication */}
   <Route
     path="/auth"
-    element={userData ? <Navigate to="/" replace /> : <Auth />}
+    element={userData ? <Navigate to="/home" replace /> : <Auth />}
   />
 
   {/* History */}
   <Route
     path="/history"
-    element={userData ? <History /> : <Navigate to="/auth" replace />}
+    element={guard(<History />)}
   />
 
   {/* Notes */}
   <Route
     path="/notes"
-    element={userData ? <Notes /> : <Navigate to="/auth" replace />}
+    element={guard(<Notes />)}
   />
 
   {/* Pricing */}
   <Route
     path="/pricing"
-    element={userData ? <Pricing /> : <Navigate to="/auth" replace />}
+    element={guard(<Pricing />)}
   />
+
+  {/* Fallback */}
+  <Route path="*" element={<Navigate to={userData ? "/home" : "/auth"} replace />} />
 </Routes>
-    </>
   )
 }
 
