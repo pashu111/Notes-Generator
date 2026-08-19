@@ -7,7 +7,7 @@ import Pricing from "./pages/Pricing.jsx"
 import { useEffect } from 'react'
 import { getCurrentUser } from './services/api.js'
 import {useDispatch, useSelector} from 'react-redux'
-export const serverUrl = "http://localhost:8000"
+export const serverUrl = "https://notes-generator-wsa2.onrender.com"
 
 function App () {
   const dispatch = useDispatch()
