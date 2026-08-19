@@ -17,7 +17,7 @@ dns.setServers([
 const app = express()
 
 app.use(cors({
-    origin: "https://notes-generator-phi.vercel.app",
+    origin: "https://notes-generator-5trfkma4w-pashu111s-projects.vercel.app",
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"]
