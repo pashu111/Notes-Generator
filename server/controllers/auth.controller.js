@@ -100,7 +100,11 @@ export const googleAuth = async (req,res) => {
 
 export const logOut = async (req,res) =>{
     try{
-        await res.clearCookie("token")
+        await res.clearCookie("token", {
+            httpOnly: true,
+            secure: IS_PROD,
+            sameSite: IS_PROD ? "none" : "lax",
+        })
         return res.status(200).json({message: "Logout Successfully"})
 
     }catch (error){
